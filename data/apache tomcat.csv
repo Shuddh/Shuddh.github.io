@@ -1,0 +1,21 @@
+,text,category,importance,word_count,size
+140,query,apache tomcat,0.054692104,2471,20
+141,node,apache tomcat,0.047779925,2158,20
+142,neo4j,apache tomcat,0.044386871,4731,20
+143,relationship,apache tomcat,0.036850106,1697,20
+144,property,apache tomcat,0.025422644,1305,20
+145,create,apache tomcat,0.021169066,2209,20
+146,graph,apache tomcat,0.01821636,1232,20
+147,index,apache tomcat,0.015294745,744,20
+148,using,apache tomcat,0.01527562,6128,20
+149,cypher,apache tomcat,0.012913005,555,20
+150,return,apache tomcat,0.012604767,1368,20
+151,sequelize,apache tomcat,0.011423348,553,20
+152,database,apache tomcat,0.009555076,1804,20
+153,model,apache tomcat,0.009530287,1260,20
+154,would,apache tomcat,0.009461464,3301,20
+155,label,apache tomcat,0.008515275,829,20
+156,result,apache tomcat,0.00843228,1549,20
+157,example,apache tomcat,0.008224287,2034,20
+158,multiple,apache tomcat,0.008137634,1060,20
+159,created,apache tomcat,0.007847481,1042,20

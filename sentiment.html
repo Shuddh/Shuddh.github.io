@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Tennis Match Data Visualization</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="css/homeStyle.css"/>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+body { font-family: Arial;}
+.xaxis path, .yaxis path {
+  fill: none;
+  stroke-width: 5;
+  stroke: #ACB849;
+}
+.negativeScoreline {
+		fill: none;
+		stroke: #FF4500;
+		stroke-width: 6px;
+	}
+  .positiveScoreline{
+	fill: none;
+	stroke: #90EE90;
+	stroke-width: 6px;
+  }
+.grid line {
+	stroke: lightgrey;
+	stroke-opacity: 0.7;
+	shape-rendering: crispEdges;
+  }
+
+/* Style the header */
+header {
+  background-color: #fcfcfc;
+  padding: 2px;
+  border-bottom-width: 2px;
+  text-align: left;
+  font-size: 15px;
+  color: #081d58;
+  font-family: Comic;
+  Comic Sans MS
+}
+
+/* Create two columns/boxes that floats next to each other */
+article {
+  float: left;
+  padding: 20px;
+  width: 80%;
+  background-color: #ffffff;
+  height: 480px; /* only for demonstration, should be removed */
+}
+
+/* Clear floats after the columns */
+section:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Style the footer */
+footer {
+  background-color: #777;
+  padding: 5px;
+  text-align: center;
+  color: white;
+}
+
+/* Responsive layout - makes the two columns/boxes stack on top of each other instead of next to each other, on small screens */
+@media (max-width: 500px) {
+  nav, article {
+	width: 100%;
+	height: auto;
+  }
+}
+.sidenav {
+  width: 16%;
+  position: fixed;
+  z-index: 1;
+  top: 100px;
+  left: 10px;
+  background: #fcfcfc;
+  overflow-x: hidden;
+  padding: 8px 0;
+  border-color: black;
+}
+
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 15px;
+  color: #2196F3;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: #fcfcfc;
+}
+
+svg {
+	-webkit-filter: drop-shadow( 0px 3px 3px rgba(0,0,0,.3) );
+	filter: drop-shadow( 0px 3px 3px rgba(0,0,0,.25) );
+}
+.side_nav {
+  float: left;
+  margin-top: 80px;
+}
+
+/* Style the list inside the menu */
+nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+.toolTip {
+  position: absolute;
+  display: none;
+  min-width: 80px;
+  height: auto;
+  background: none repeat scroll 0 0 ;
+  border: 1px solid #6F257F;
+  padding: 14px;
+  text-align: center;
+}
+
+.bar.positive {
+	fill: #0dbab1;
+  }
+
+  .bar.negative {
+	fill: #ff6b63;
+  }
+
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse">
+	<div class="container-fluid header-nav">
+	  <div class="row">
+		<div class="col-md-4">
+			<img src="img/home-logo.png" class="img-circle" alt="Logo" width="37px" height="37px"> 
+		  	<a href="index.html">Home</a>
+		</div>
+		<div class="col-md-2">
+		  <img src="img/ss-logo.png"  class="img-circle" alt="Logo" width="37px" height="37px"> 
+		  <a href="sentiment.html">Sentiment Analysis</a>
+		</div>
+		<div class="col-md-2">
+		  <img src="img/net-logo.png" class="img-circle" alt="Logo" width="37px" height="37px"> 
+		  <a href="network.html">Techology Network</a>
+		</div>
+		<div class="col-md-2">
+		  <img src="img/wc-logo.png" class="img-circle" alt="Logo" width="37px" height="37px">
+			<a href="topicModel.html">Topic Modelling</a>
+		</div>
+		<div class="col-md-2">
+          <img src="img/team-logo.png" class="img-circle" alt="Logo" width="37px" height="37px"> 
+		  <a href="about.html">About Us</a>
+		</div>
+	  </div>
+	</div>
+</nav>
+
+<!-- <header>
+  <h2 align="center" style ="color: #6D5F81">Chart for Sentiment Score and Number of Posts</h2>
+</header> -->
+
+<section>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-3">
+				<nav class="navbar side_nav">
+					<p style ="color: #6D5F81">Time series chart showing aggregated positive and negative sentiments along with the count of posts to showcase the user's sentiment towards java related posts during the year 2018.</p>
+					<div class="w3-dropdown-hover">
+						<button class="w3-button w3-dark-grey">Select Month!</button>
+						<div class="w3-dropdown-content w3-bar-block w3-border">
+							<a href="#" onclick="updateData('data/Jan.csv');" class="w3-bar-item w3-button">January</a>
+							<a href="#" onclick="updateData('data/Feb.csv');" class="w3-bar-item w3-button">February</a>
+							<a href="#" onclick="updateData('data/March.csv');" class="w3-bar-item w3-button">March</a>
+							<a href="#" onclick="updateData('data/April.csv');" class="w3-bar-item w3-button">April</a>
+							<a href="#" onclick="updateData('data/May.csv');" class="w3-bar-item w3-button">May</a>
+							<a href="#" onclick="updateData('data/June.csv');" class="w3-bar-item w3-button">June</a>
+							<a href="#" onclick="updateData('data/July.csv');" class="w3-bar-item w3-button">July</a>
+							<a href="#" onclick="updateData('data/Aug.csv');" class="w3-bar-item w3-button">August</a>
+							<a href="#" onclick="updateData('data/Sept.csv');" class="w3-bar-item w3-button">September</a>
+							<a href="#" onclick="updateData('data/Oct.csv');" class="w3-bar-item w3-button">October</a>
+							<a href="#" onclick="updateData('data/Nov.csv');" class="w3-bar-item w3-button">November</a>
+							<a href="#" onclick="updateData('data/Dec.csv');" class="w3-bar-item w3-button">December</a>
+						</div>
+					</div>
+			  </nav>
+			</div>
+			<div class="col-md-9">
+				<article>
+	<script>
+		//Margins
+	  var margin = {top: 0, right: 0, bottom: 0, left: 0},
+		  width = 950 - margin.left - margin.right,
+		  height = 500 - margin.top - margin.bottom;
+		  padding = 50; 
+
+		// create an svg container
+		var vis = d3.select("article").
+			append("svg:svg")
+				.attr("width", width)
+				.attr("height", height);
+
+		//data parse
+		var parseDate = d3.timeParse("%m/%d/%Y %H:%M");
+
+		//Define Scales for X, Y and Right Y axis
+		var xScale = d3.scaleTime().range([padding, width - padding * 2]),
+			yScale = d3.scaleLinear().range([height - padding, padding]),
+			rightYScale = d3.scaleLinear().range([height - padding, padding]);
+
+		//Create X, Y and Right Y axis
+		var xAxis = d3.axisBottom().scale(xScale),
+			yAxis = d3.axisLeft().scale(yScale);
+			rightYAxis = d3.axisRight().scale(rightYScale);
+
+		//Line in line graph for Positive sentiment score
+		var positiveScoreline = d3.line()
+			.x(function (d) {return xScale(d.date); })
+			.y(function (d) {return yScale(d.mean_pos_score); });
+
+		//area in line graph for Positive sentiment score
+		var positiveScoreArea = d3.area()
+			.x(function (d) {return xScale(d.date); })
+			.y0(height/2)
+			.y1(function (d) {return yScale(d.mean_pos_score); });
+
+		//Line in line graph for negative sentiment score
+		var negativeScoreline = d3.line()
+			.x(function (d) {return xScale(d.date); })
+			.y(function (d) {return yScale(d.neg_score); });
+
+		//area in line graph for negative sentiment score
+		var negativeScoreArea = d3.area()
+			.x(function (d) {return xScale(d.date); })
+			.y0(height/2)
+			.y1(function (d) {return yScale(d.neg_score); });
+
+		//color scale for legend
+		var color = d3.scaleOrdinal()
+		  .domain(["No Of positive posts", "No Of negative posts", "Positive sentiment score", "Negative sentiment score"])
+		  .range(["#0dbab1", "#ff6b63", "#90EE90","#FF4500"]);
+
+		//function for X gridlines in svg background
+		function make_x_gridlines() {
+			return d3.axisBottom(xScale)
+				.ticks(10)
+		}
+
+		//function for Y gridlines in svg background
+		function make_y_gridlines() {
+			return d3.axisLeft(yScale)
+				.ticks(10)
+		}
+
+		//data import
+		d3.csv("data/Jan.csv", function(data) {
+
+		  //iterating through the data and store in variables
+		  data.forEach(function(d) {
+				d.date = parseDate(d.creation_date);
+				d.mean_pos_score = +d.mean_pos_score;
+				d.neg_score = +d.neg_score;
+				d.positive_posts = +d.positive_posts;
+				d.neg_posts = +d.neg_posts;
+		  });
+		  //console.log(data);
+		  //declare domain for XScale based on data
+		  xScale.domain(d3.extent(data, function(d) { return d.date; }));
+
+		  //declare domain for YScale for positive and negative sentiment score
+		  yScale.domain([-0.1, 0.1]);
+
+		  //declare domain for right Y scale - number of positive and negative posts. Find max among both and declare scale
+		  var negMin = d3.min(data, function (d) { return d.neg_posts; });
+		  var posMax = d3.max(data, function (d) { return d.positive_posts; });
+		  var postsScore = Math.max(Math.abs(negMin), Math.abs(posMax));
+		  rightYScale.domain([-postsScore, postsScore]);
+
+		  // Add the Y Axis
+		  vis.append("g")
+			  .attr("class", "axisColor")
+			  .attr("transform", "translate("+padding+",0)")
+			  .call(d3.axisLeft(yScale));
+
+		  // Add the X Axis
+		  vis.append("g")
+			  .attr("class", "axisColor")
+			  .attr("transform", "translate(0," + (height - padding) + ")")
+			  .call(d3.axisBottom(xScale));
+
+		  //append path - line in the line chart - positive score
+		  vis.append("g").append("path")
+			.datum(data)
+			.attr("class", "positiveScoreline")
+			.attr("d", positiveScoreline);
+
+		  //append path - area in the line chart - positive score
+		  vis.append("path")
+				.datum(data)
+				.attr("fill", "#90EE90")
+				.attr("fill-opacity", .1)
+				.attr("stroke", "none")
+				.attr("d",positiveScoreArea);
+
+		  //append path - line in the line chart - negative score
+		  vis.append("g").append("path")
+			.datum(data)
+			.attr("class", "negativeScoreline")
+			.attr("fill-opacity", .1)
+			.attr("d", negativeScoreline);
+
+		  //append path - area in the line chart - negative score
+		  vis.append("path")
+				.datum(data)
+				.attr("fill", "#FF4500")
+				.attr("fill-opacity", .1)
+				.attr("stroke", "none")
+				.attr("d",negativeScoreArea);
+
+		  // Add the Right Y Axis
+		  vis.append("g")
+			  .attr("class", "axisColor")
+			  .attr("transform", "translate( " + (width-2*padding) + ", 0 )")
+			  .call(d3.axisRight(rightYScale));
+
+		  //Scale for middle X axis for postive and negative axis
+		  var x = d3.scaleBand()
+				.domain(d3.range(31))
+				.range([padding, width - padding * 2])
+				//.rangeRound([0, width])
+				.padding(0.4);
+
+		  //append bars to svg - No of positive posts on that particular date
+		  var positiveBars = vis.append("g").selectAll(".bar")
+			.data(data)
+
+			positiveBars
+			  .enter().append("rect")
+			  .attr("class", function(d) { return d.positive_posts < 0 ? "bar negative" : "bar positive"; })
+			  .attr("y", function(d) { return rightYScale(0); })
+			  .attr("x", function(d, i) { return x(i++);
+			  })
+			  .attr("width", x.bandwidth())
+			  .attr("height", function(d) { return Math.abs(rightYScale(d.positive_posts) - rightYScale(0)); })
+			  .attr("y", function(d) {
+				return rightYScale(Math.max(0, d.positive_posts)); });
+
+		  //append bars to svg - No of negative posts on that particular date
+		  var negativeBars = vis.append("g").selectAll(".bar")
+			.data(data)
+			negativeBars
+					.enter().append("rect")
+					.attr("class", function(d) {
+					  return d.neg_posts < 0 ? "bar negative" : "bar positive"; })
+					.attr("y", function(d) { return rightYScale(0); })
+					.attr("x", function(d, i) { return x(i++);
+					})
+					.attr("width", x.bandwidth())
+					.attr("height", 0)
+					.attr("height", function(d) { return Math.abs(rightYScale(d.neg_posts) - rightYScale(0)); })
+					.attr("y", function(d) {
+					  return rightYScale(Math.max(0, d.neg_posts)); });
+
+			//Add middle X axis for positive and negative no of posts
+			vis.append("g")
+			  .attr("class", "axisColor")
+			  .append("line")
+			  .attr("y1", rightYScale(0))
+			  .attr("y2", rightYScale(0))
+			  .attr("x1", padding)
+			  .attr("stroke-width", 2)
+			  .attr("stroke", "grey")
+			  .attr("x2", xScale(d3.max(data, function(d) { return d.date; })));
+
+
+			// Append Axis Title - Sentiment on the Y axis
+			vis.append("g")
+			  .append("text")
+			  .attr("transform", "rotate(-90)")
+			  .attr("y", 0-(margin.left/2)-8)
+			  .attr("x",0 - (height / 2))
+			  .attr("dy", "1em")
+			  .style("text-anchor", "middle")
+			  .style("font-size", "25px")
+			  .style("font-weight", "bold")
+			  .style("fill", "#696969")
+			  .text("Sentiment");
+
+			// Append Axis Title - Positive Negative Posts on the Right Y axis
+			vis.append("g")
+			  .append("text")
+			  .attr("transform", "rotate(-90)")
+			  .attr("y", width-padding-5)
+			  .attr("x",0 - (height / 2))
+			  .attr("dy", "1em")
+			  .style("text-anchor", "middle")
+			  .style("font-size", "25px")
+			  .style("font-weight", "bold")
+			  .style("fill", "#696969")
+			  .text("Positive Negative Posts");
+
+			// Append Axis Title - Date on the X axis
+			vis.append("text")
+			  .attr("class", "axisTitle")
+				.attr("transform","translate(" + (width/2) + " ," + (height) + ")")
+				.style("text-anchor", "middle")
+				.style("font-size", "25px")
+				.style("font-weight", "bold")
+				.style("fill", "#696969")
+				.text("Date");
+
+			console.log("height");
+			console.log(height-2*padding);
+			
+			//Append X grid lines
+			vis.append("g")
+				.attr("class", "grid")
+				.attr("transform", "translate(0," + (height - padding) + ")")
+				.call(make_x_gridlines()
+					.tickSize(-height+2*padding)
+					.tickFormat("")
+				)
+
+			//Append Y grid lines
+			vis.append("g")
+			  .attr("class", "grid")
+			  //.attr("transform", "translate(0," + (height - padding) + ")")
+			  //.attr("transform", "translate( " +  + ", 0 )")
+			  .attr("transform", "translate("+padding+",0)")
+			  .call(make_y_gridlines()
+				  .tickSize(-width+3*padding)
+				  .tickFormat("")
+			  )
+
+			  //legend variables
+		  var legendRectSize = 40;
+		  var legendSpacing = 10;
+		  var legendRectHeight= 20;
+
+		  //legend variables
+		  var legend = vis.append("g")
+			  .selectAll("g")
+			  .data(color.domain())
+			  .enter()
+			  .append('g')
+				.attr('class', 'legend')
+				.attr('transform', function(d, i) {
+				  var height = legendRectHeight+5;
+				  var x = i * 200+40;
+				  var y = height-20;
+				  return 'translate(' + x + ',' + y + ')';
+			  });
+
+		  //Append legened rectangles
+		  legend.append('rect')
+			  .attr('width', legendRectSize)
+			  .attr('height', legendRectHeight)
+			  .style('fill', color)
+			  .style('stroke', color);
+
+		  //Append legened text against the rectangles
+		  legend.append('text')
+			  .attr('x', legendRectSize + legendSpacing)
+			  .attr('y', legendRectSize - legendRectHeight-2)
+			  .data(color.domain())
+			  .style('fill', color)
+			  .style("font-size", "13px")
+			  .text(function(d) { return d; });
+
+		  });
+
+  function updateData(filename){
+	d3.selectAll("svg > *").remove();
+	console.log(filename);
+			d3.csv(filename, function(data) {
+
+			//iterating through the data and store in variables
+			data.forEach(function(d) {
+				  d.date = +parseDate(d.creation_date);
+				  d.mean_pos_score = +d.mean_pos_score;
+				  d.neg_score = +d.neg_score;
+				  d.positive_posts = +d.positive_posts;
+				  d.neg_posts = +d.neg_posts;
+			});
+		  
+		  //declare domain for XScale based on data
+		  xScale.domain(d3.extent(data, function(d) { 
+			console.log(d.date);
+			return d.date;}));
+
+		  //declare domain for YScale for positive and negative sentiment score
+		  yScale.domain([-0.1, 0.1]);
+
+		  //declare domain for right Y scale - number of positive and negative posts. Find max among both and declare scale
+		  var negMin = d3.min(data, function (d) { return d.neg_posts; });
+		  var posMax = d3.max(data, function (d) { return d.positive_posts; });
+		  var postsScore = Math.max(Math.abs(negMin), Math.abs(posMax));
+		  rightYScale.domain([-postsScore, postsScore]);
+
+		  // Add the Y Axis
+		  vis.append("g")
+			  .attr("class", "axisColor")
+			  .attr("transform", "translate("+padding+",0)")
+			  .call(d3.axisLeft(yScale));
+
+		  // Add the X Axis
+		  vis.append("g")
+			  .attr("class", "axisColor")
+			  .attr("transform", "translate(0," + (height - padding) + ")")
+			  .call(d3.axisBottom(xScale));
+
+		  console.log(data);
+
+		  //append path - line in the line chart - positive score
+		  vis.append("g").append("path")
+			.datum(data)
+			.attr("class", "positiveScoreline")
+			.attr("d", positiveScoreline);
+
+		  //append path - area in the line chart - positive score
+		  vis.append("path")
+				.datum(data)
+				.attr("fill", "#90EE90")
+				.attr("fill-opacity", .1)
+				.attr("stroke", "none")
+				.attr("d",positiveScoreArea);
+
+		  //append path - line in the line chart - negative score
+		  vis.append("g").append("path")
+			.datum(data)
+			.attr("class", "negativeScoreline")
+			.attr("fill-opacity", .1)
+			.attr("d", negativeScoreline);
+
+		  //append path - area in the line chart - negative score
+		  vis.append("path")
+				.datum(data)
+				.attr("fill", "#FF4500")
+				.attr("fill-opacity", .1)
+				.attr("stroke", "none")
+				.attr("d",negativeScoreArea);
+
+		  // Add the Right Y Axis
+		  vis.append("g")
+			  .attr("class", "axisColor")
+			  .attr("transform", "translate( " + (width-2*padding) + ", 0 )")
+			  .call(d3.axisRight(rightYScale));
+
+		  //Scale for middle X axis for postive and negative axis
+		  var x = d3.scaleBand()
+				.domain(d3.range(31))
+				.range([padding, width - padding * 2])
+				//.rangeRound([0, width])
+				.padding(0.4);
+
+		  //append bars to svg - No of positive posts on that particular date
+		  var positiveBars = vis.append("g").selectAll(".bar")
+			.data(data)
+
+			positiveBars
+			  .enter().append("rect")
+			  .attr("class", function(d) { return d.positive_posts < 0 ? "bar negative" : "bar positive"; })
+			  .attr("y", function(d) { return rightYScale(0); })
+			  .attr("x", function(d, i) { return x(i++);
+			  })
+			  .attr("width", x.bandwidth())
+			  .attr("height", function(d) { return Math.abs(rightYScale(d.positive_posts) - rightYScale(0)); })
+			  .attr("y", function(d) {
+				return rightYScale(Math.max(0, d.positive_posts)); });
+
+		  //append bars to svg - No of negative posts on that particular date
+		  var negativeBars = vis.append("g").selectAll(".bar")
+			.data(data)
+			negativeBars
+					.enter().append("rect")
+					.attr("class", function(d) {
+					  return d.neg_posts < 0 ? "bar negative" : "bar positive"; })
+					.attr("y", function(d) { return rightYScale(0); })
+					.attr("x", function(d, i) { return x(i++);
+					})
+					.attr("width", x.bandwidth())
+					.attr("height", 0)
+					.attr("height", function(d) { return Math.abs(rightYScale(d.neg_posts) - rightYScale(0)); })
+					.attr("y", function(d) {
+					  return rightYScale(Math.max(0, d.neg_posts)); });
+
+			//Add middle X axis for positive and negative no of posts
+			vis.append("g")
+			  .attr("class", "axisColor")
+			  .append("line")
+			  .attr("y1", rightYScale(0))
+			  .attr("y2", rightYScale(0))
+			  .attr("x1", padding)
+			  .attr("stroke-width", 2)
+			  .attr("stroke", "grey")
+			  .attr("x2", xScale(d3.max(data, function(d) { return d.date; })));
+
+
+			// Append Axis Title - Sentiment on the Y axis
+			vis.append("g")
+			  .append("text")
+			  .attr("transform", "rotate(-90)")
+			  .attr("y", 0-(margin.left/2)-8)
+			  .attr("x",0 - (height / 2))
+			  .attr("dy", "1em")
+			  .style("text-anchor", "middle")
+			  .style("font-size", "25px")
+			  .style("font-weight", "bold")
+			  .style("fill", "#696969")
+			  .text("Sentiment");
+
+			// Append Axis Title - Positive Negative Posts on the Right Y axis
+			vis.append("g")
+			  .append("text")
+			  .attr("transform", "rotate(-90)")
+			  .attr("y", width-padding-5)
+			  .attr("x",0 - (height / 2))
+			  .attr("dy", "1em")
+			  .style("text-anchor", "middle")
+			  .style("font-size", "25px")
+			  .style("font-weight", "bold")
+			  .style("fill", "#696969")
+			  .text("Positive Negative Posts");
+
+			// Append Axis Title - Date on the X axis
+			vis.append("text")
+			  .attr("class", "axisTitle")
+				.attr("transform","translate(" + (width/2) + " ," + (height) + ")")
+				.style("text-anchor", "middle")
+				.style("font-size", "25px")
+				.style("font-weight", "bold")
+				.style("fill", "#696969")
+				.text("Date");
+
+			console.log("height");
+			console.log(height-2*padding);
+			
+			//Append X grid lines
+			vis.append("g")
+				.attr("class", "grid")
+				.attr("transform", "translate(0," + (height - padding) + ")")
+				.call(make_x_gridlines()
+					.tickSize(-height+2*padding)
+					.tickFormat("")
+				)
+
+			//Append Y grid lines
+			vis.append("g")
+			  .attr("class", "grid")
+			  //.attr("transform", "translate(0," + (height - padding) + ")")
+			  //.attr("transform", "translate( " +  + ", 0 )")
+			  .attr("transform", "translate("+padding+",0)")
+			  .call(make_y_gridlines()
+				  .tickSize(-width+3*padding)
+				  .tickFormat("")
+			  )
+
+			  //legend variables
+		var legendRectSize = 40;
+		var legendSpacing = 10;
+		var legendRectHeight= 20;
+
+		//legend variables
+		var legend = vis.append("g")
+			.selectAll("g")
+			.data(color.domain())
+			.enter()
+			.append('g')
+			  .attr('class', 'legend')
+			  .attr('transform', function(d, i) {
+				var height = legendRectHeight+5;
+				var x = i * 200+40;
+				var y = height-20;
+				return 'translate(' + x + ',' + y + ')';
+			});
+
+		//Append legened rectangles
+		legend.append('rect')
+			.attr('width', legendRectSize)
+			.attr('height', legendRectHeight)
+			.style('fill', color)
+			.style('stroke', color);
+
+		//Append legened text against the rectangles
+		legend.append('text')
+			.attr('x', legendRectSize + legendSpacing)
+			.attr('y', legendRectSize - legendRectHeight-2)
+			.data(color.domain())
+			.style('fill', color)
+			.style("font-size", "13px")
+			.text(function(d) { return d; });
+
+		});}
+	</script>
+  </article>
+  </div>
+  </div>
+  </div>
+</section>
+
+</body>
+</html>

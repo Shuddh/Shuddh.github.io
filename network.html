@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Technology Network</title>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+		<link rel="stylesheet" type="text/css" href="styles/gexfjs.css" />
+		<link rel="stylesheet" type="text/css" href="styles/jquery-ui-1.10.3.custom.min.css" />
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+		<script type="text/javascript">
+			if (typeof jQuery == 'undefined') {
+				document.write(unescape("%3Cscript type='text/javascript' src='js/jquery-2.0.2.min.js'%3E%3C/script%3E"));
+			}
+		</script>
+		<script type="text/javascript" src="js/jquery.mousewheel.min.js"></script>
+		<script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>
+		<script type="text/javascript" src="js/gexfjs.js"></script>
+		<script type="text/javascript" src="js/config.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="css/homeStyle.css"/>
+	</head>
+	<body>
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid header-nav">
+				<!-- <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button> -->
+				<div class="row">
+					<div class="col-md-4">
+						<img src="img/home-logo.png" class="img-circle" alt="Logo" width="37px" height="37px"> 
+						<a href="index.html">Home</a>
+					</div>
+					<div class="col-md-2">
+						<img src="img/ss-logo.png"  class="img-circle" alt="Logo" width="37px" height="37px"> 
+						<a href="sentiment.html">Sentiment Analysis</a>
+					</div>
+					<div class="col-md-2">
+						<img src="img/net-logo.png" class="img-circle" alt="Logo" width="37px" height="37px"> 
+						<a href="network.html">Techology Network</a>
+					</div>
+					<div class="col-md-2">
+						<img src="img/wc-logo.png" class="img-circle" alt="Logo" width="37px" height="37px">
+							<a href="topicModel.html">Topic Modelling</a>
+					</div>
+					<div class="col-md-2">
+				        <img src="img/team-logo.png" class="img-circle" alt="Logo" width="37px" height="37px"> 
+						<a href="aboutus.html">About Us</a>
+					</div>
+				</div>
+			</div>
+		</nav>
+		<div style="top: 50px !important">
+			<div id="zonecentre" class="gradient">
+				<div align="center" style = "background-color: rgba(60,100,255,0.1)";>
+					<font size="5">Technology Network</font>
+				</div>
+				<canvas id="carte" width="0" height="0"></canvas>
+				<ul id="ctlzoom">
+					<li>
+						<a href="#" id="zoomPlusButton" title="S'approcher"> </a>
+					</li>
+					<li id="zoomSliderzone">
+						<div id="zoomSlider"></div>
+					</li>
+					<li>
+						<a href="#" id="zoomMinusButton" title="S'éloigner"> </a>
+					</li>
+					<li>
+						<a href="#" id="lensButton"> </a>
+					</li>
+					<li>
+						<a href="#" id="edgesButton"> </a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div id="overviewzone" class="gradient">
+			<canvas id="overview" width="0" height="0"></canvas>
+		</div>
+		<div id="leftcolumn">
+			<div id="unfold">
+				<a href="#" id="aUnfold" class="rightarrow"> </a>
+			</div>
+			<div id="leftcontent"></div>
+		</div>
+		<!-- <div id="titlebar">
+			<div id="maintitle">
+				<h1><a href="communities.html" title="Open Communities Page"></a></h1>
+			</div>
+		</div> -->
+		<!-- <form id="recherche">
+			<input id="searchinput" class="grey" autocomplete="off" />
+			<input id="searchsubmit" type="submit" />
+		</form>
+		<ul id="autocomplete"></ul> -->
+	</body>
+</html>

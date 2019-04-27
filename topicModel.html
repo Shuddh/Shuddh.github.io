@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="js/d3.layout.cloud.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="css/homeStyle.css"/>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+<style>
+* {
+  box-sizing: border-box;
+}
+.bar {
+  fill: steelblue;
+  opacity: 0.4;
+}
+
+.Otherbar {
+  fill: steelblue;
+}
+
+.bar:hover {
+  fill: brown;
+}
+
+.title {
+  font: bold 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.axis {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 33.33%;
+  padding: 10px;
+  height: 500px; /* Should be removed. Only for demonstration */
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+a:link {
+  color: green;
+  background-color: transparent;
+  text-decoration: none;
+}
+</style>
+</head>
+<body>
+
+
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid header-nav">
+      <!-- <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button> -->
+      <div class="row">
+        <div class="col-md-4">
+          <img src="img/home-logo.png" class="img-circle" alt="Logo" width="37px" height="37px"> 
+          <a href="index.html">Home</a>
+        </div>
+        <div class="col-md-2">
+          <img src="img/ss-logo.png"  class="img-circle" alt="Logo" width="37px" height="37px"> 
+          <a href="sentiment.html">Sentiment Analysis</a>
+        </div>
+        <div class="col-md-2">
+          <img src="img/net-logo.png" class="img-circle" alt="Logo" width="37px" height="37px"> 
+          <a href="network.html">Techology Network</a>
+        </div>
+        <div class="col-md-2">
+          <img src="img/wc-logo.png" class="img-circle" alt="Logo" width="37px" height="37px">
+            <a href="topicModel.html">Topic Modelling</a>
+        </div>
+        <div class="col-md-2">
+          <img src="img/team-logo.png" class="img-circle" alt="Logo" width="37px" height="37px"> 
+          <a href="aboutus.html">About Us</a>
+        </div>
+      </div>
+    </div>
+</nav>
+<div class="container-fluid">
+  <div class="row" style="text-align: center; font-size: 20px">
+    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+    <a href="" onclick="updateData('data/tableau.csv');" style = "color: #66c2a5">tableau</a>&nbsp&nbsp
+    <a href="#" onclick="updateData('data/elixir.csv');" style = "color: #fc8d62">elixir</a>&nbsp&nbsp
+    <a href="#" onclick="updateData('data/matplotlib.csv');"style = "color: #8da0cb">matplotlib</a>&nbsp&nbsp
+    <a href="#" onclick="updateData('data/selenium.csv');" style = "color: #e78ac3">selenium</a>&nbsp&nbsp
+    <a href="#" onclick="updateData('data/joomla.csv');" style = "color: #a6d854">joomla</a>&nbsp&nbsp
+    <a href="#" onclick="updateData('data/talend.csv');" style = "color: #bee2da">talend</a>&nbsp&nbsp
+    <a href="#" onclick="updateData('data/apache tomcat.csv');" style = "color: #041256">apache tomcat</a>&nbsp&nbsp
+    <a href="#" onclick="updateData('data/ubuntu.csv');" style = "color: #c9c9c9">ubuntu</a>&nbsp&nbsp
+    <a href="#" onclick="updateData('data/database.csv');" style = "color: #65041d">database</a>&nbsp&nbsp
+    <a href="#" onclick="updateData('data/keras.csv');" style = "color: #a26d41">keras</a>&nbsp&nbsp
+  </div>
+  
+  <div class="row" style="margin-top: 25px">
+    <div class="col-md-4" id= "area1" style="text-align: center;">
+      <p style="color:#041256">Word Cloud - Top Keywords</p>
+    </div>
+    <div class="col-md-4" id ="area2" style="text-align: center;">
+      <p style="color:#041256">Word Count and importance of Topic Keyword</p>
+    </div>
+    <div class="col-md-4" id ="area3" style="text-align: center;">
+      <p style="color:#041256">Distribution of Post Word Counts by Dominant Topic</p>
+    </div>
+</div>
+
+</div>
+<script>
+
+    var color = d3.scale.ordinal()
+    .domain(["tableau", "elixir", "matplotlib", "selenium", "joomla", "talend", "talend", "apache tomcat", "ubuntu", "database", "keras"])
+    .range(["#66c2a5","#fc8d62","#8da0cb","#e78ac3","#a6d854", "#bee2da", "#041256", "#c9c9c9", "#b087d7", "#65041d", "#a26d41", "  #e13a42"]);
+
+    d3.csv("data/tableau.csv", function(error, data) {
+       var w = 300, // if you modify this also modify .append("g") .attr -- as half of this
+          h = 300;
+
+      d3.layout.cloud().size([w, h])
+      .words(data) // from list.js
+      .padding(5)
+      .rotate(0)      
+      .font("Impact")
+      .fontSize(function(d) { return d.size; })
+      .on("end", drawCloud)
+      .start();
+
+
+      function drawCloud(words) {
+      d3.select("#area1").append("svg")
+      .attr("id", "svg1")
+          .attr("width", w)
+          .attr("height", h)
+          .append("g")
+          .attr("transform", "translate(" + w/2 + "," + h/2 + ")")
+          .selectAll("text")
+          .data(words)
+          .enter().append("text")
+          .style("font-size", function(d) { return (d.size) + "px"; })
+          .style("font-family", "Impact")
+          .style("fill", function(d) {
+            var paringObject = data.filter(function(obj) { return obj.text === d.text});
+            return color(paringObject[0].category);
+          })
+          .attr("text-anchor", "middle")
+          .attr("transform", function(d,i) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+              }
+          )
+        .text(function(d) { return d.text; });
+    }
+
+    });
+
+    // Set the dimensions of the canvas / graph
+    var margin = {top: 10, right: 0, bottom: 0, left: 0},
+      width = 400 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom,
+      padding = 35;
+
+
+    // Set the ranges
+    //var x = d3.time.scale().range([0, width]);
+
+    var x = d3.scale.ordinal().rangeRoundBands([padding, (width-padding)], 0.1, 0.5);
+
+    var y = d3.scale.linear().range([height-padding, padding]);
+
+    var rightY = d3.scale.linear().range([height-padding, padding]);
+
+
+    // Define the axes
+    var xAxis = d3.svg.axis().scale(x)
+      .orient("bottom");
+
+    var yAxis = d3.svg.axis().scale(y)
+      .orient("left").ticks(8);
+
+    var rightYAxis = d3.svg.axis().scale(rightY)
+        .orient("right").ticks(8);
+
+
+    // Adds the svg canvas
+    var chart2 = d3.select("#area2")
+      .append("svg")
+      .attr("id", "svg2")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        
+    // Get the data
+    d3.csv("data/tableau.csv", function(error, data) {
+
+       data.forEach(function(d) {
+                    //d.date = parseDate(d.creation_date);
+                    d.word_count = +d.word_count;
+                    d.importance = +d.importance;
+        });
+
+      x.domain(data.map(d => d.text))
+      y.domain([0, d3.max(data, function(d) { return d.word_count; })])
+      rightY.domain([0, d3.max(data, function(d) { return d.importance; })])
+
+      chart2.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + (height-2*padding) + ")")
+          .call(xAxis)
+          .selectAll(".tick text")
+          .attr("dx", "-.8em")
+          .attr("dy", "-.50em")
+          .style("text-anchor", "end")
+          .attr("transform", "rotate(-90)");
+
+      // Add the Y Axis
+      chart2.append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate("+padding+","+ -padding +")")
+        .call(yAxis);
+
+      // Add the rightY Axis
+      chart2.append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate( " + (width-padding) + "," +-padding+" )")
+        .call(rightYAxis);
+
+
+      chart2.selectAll(".bar")
+          .data(data)
+        .enter().append("rect")
+          .attr("class", "bar")
+          .attr("x", function(d) { 
+            return x(d.text); })
+          .attr("width", x.rangeBand())
+          //.attr("width", "5")
+          .attr("y", function(d) { 
+            return y(d.word_count); })
+          .style("fill", function(d) {
+            var paringObject = data.filter(function(obj) { return obj.text === d.text});
+            return color(paringObject[0].category);
+          })
+          .attr("height", d => (height-2*padding) - y(d.word_count))
+
+      chart2.selectAll(".Otherbars")
+          .data(data)
+        .enter().append("rect")
+          .attr("class", "Otherbar")
+          //.attr("x", d => x(d.name)+5)
+          .attr("x", function(d) { return x(d.text)+4; })
+          .attr("width", "5")
+          .style("fill", function(d) {
+            var paringObject = data.filter(function(obj) { return obj.text === d.text});
+            return color(paringObject[0].category);
+          })
+          .attr("y", function(d) { 
+            return rightY(d.importance); })
+          .attr("height", d => (height-2*padding) - rightY(d.importance))
+
+    });
+
+
+  // Set the dimensions of the canvas / graph
+    var margin = {top: 10, right: 0, bottom: 0, left: 0},
+      width = 400 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom,
+      padding = 35;
+
+    // Adds the svg canvas
+    var chart3 = d3.select("#area3")
+      .append("svg")
+      .attr("id", "svg2")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    d3.json("data/word_Distribution.json", function(error, data) {
+      console.log(data);
+      data.forEach(function(d) {
+        d.word_count = +d.word_count;
+      });
+    });
+
+
+
+function updateData(filename){
+    d3.select("#svg1").remove();
+    d3.select("#svg2").remove();
+
+    d3.csv(filename, function(error, data) {
+       var w = 300, // if you modify this also modify .append("g") .attr -- as half of this
+          h = 300;
+
+      d3.layout.cloud().size([w, h])
+      .words(data) // from list.js
+      .padding(5)
+      .rotate(0)      
+      .font("Impact")
+      .fontSize(function(d) { return d.size; })
+      .on("end", drawCloud)
+      .start();
+
+      function drawCloud(words) {
+      d3.select("#area1").append("svg")
+      .attr("id","svg1")
+          .attr("width", w)
+          .attr("height", h)
+          .append("g")
+          .attr("transform", "translate(" + w/2 + "," + h/2 + ")")
+          .selectAll("text")
+          .data(words)
+          .enter().append("text")
+          .style("font-size", function(d) { return (d.size) + "px"; })
+          .style("font-family", "Impact")
+          //.style("fill", "red")
+          .style("fill", function(d) {
+          var paringObject = data.filter(function(obj) { return obj.text === d.text});
+          return color(paringObject[0].category);
+      })
+          .attr("text-anchor", "middle")
+          .attr("transform", function(d,i) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+              }
+          )
+        .text(function(d) { return d.text; });
+    }
+
+    });
+
+
+    // Set the dimensions of the canvas / graph
+    var margin = {top: 10, right: 0, bottom: 0, left: 0},
+      width = 400 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom,
+      padding = 35;
+
+
+    // Set the ranges
+    //var x = d3.time.scale().range([0, width]);
+
+    var x = d3.scale.ordinal().rangeRoundBands([padding, (width-padding)], 0.1, 0.5);
+
+    var y = d3.scale.linear().range([height-padding, padding]);
+
+    var rightY = d3.scale.linear().range([height-padding, padding]);
+
+
+    // Define the axes
+    var xAxis = d3.svg.axis().scale(x)
+      .orient("bottom");
+
+    var yAxis = d3.svg.axis().scale(y)
+      .orient("left").ticks(8);
+
+    var rightYAxis = d3.svg.axis().scale(rightY)
+        .orient("right").ticks(8);
+
+
+    // Adds the svg canvas
+    var chart2 = d3.select("#area2")
+      .append("svg")
+      .attr("id", "svg2")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Get the data
+    d3.csv(filename, function(error, data) {
+
+       data.forEach(function(d) {
+                    //d.date = parseDate(d.creation_date);
+                    d.word_count = +d.word_count;
+                    d.importance = +d.importance;
+        });
+
+      x.domain(data.map(d => d.text))
+      var temp = d3.max(data, function(d) { 
+        return d.word_count; });
+      y.domain([0, d3.max(data, function(d) { 
+        return d.word_count; })])
+      rightY.domain([0, d3.max(data, function(d) { return d.importance; })])
+
+      chart2.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + (height-2*padding) + ")")
+          .call(xAxis)
+          .selectAll(".tick text")
+          .attr("dx", "-.8em")
+          .attr("dy", "-.50em")
+          .style("text-anchor", "end")
+          .attr("transform", "rotate(-90)");
+
+      // Add the Y Axis
+      chart2.append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate("+padding+","+ -padding +")")
+        .call(yAxis);
+
+      // Add the rightY Axis
+      chart2.append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate( " + (width-padding) + "," +-padding+" )")
+        .call(rightYAxis);
+
+
+      chart2.selectAll(".bar")
+          .data(data)
+        .enter().append("rect")
+          .attr("class", "bar")
+          .attr("x", d => x(d.text))
+          .attr("width", x.rangeBand())
+          .attr("y", function(d) { 
+            return y(d.word_count); })
+          .style("fill", function(d) {
+            var paringObject = data.filter(function(obj) { return obj.text === d.text});
+            return color(paringObject[0].category);
+          })
+          .attr("height", d => (height-2*padding) - y(d.word_count))
+
+      chart2.selectAll(".Otherbars")
+          .data(data)
+        .enter().append("rect")
+          .attr("class", "Otherbar")
+          //.attr("x", d => x(d.name)+5)
+          .attr("x", function(d) { return x(d.text)+4; })
+          .attr("width", "5")
+          .attr("y", function(d) { 
+            return rightY(d.importance); })
+          .style("fill", function(d) {
+            var paringObject = data.filter(function(obj) { return obj.text === d.text});
+            return color(paringObject[0].category);
+          })
+          .attr("height", d => (height-2*padding) - rightY(d.importance))
+    });
+  }
+
+</script>
+
+</body>
+</html>
