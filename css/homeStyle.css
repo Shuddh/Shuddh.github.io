@@ -28,21 +28,22 @@ body {
 }
 
 .header-nav {
-	background: #F7A571;
-	color: #07C;
+	background: #222222;
+	color: #080808;
 	padding: 10px;
 	font-weight: normal;
 }
 
-.header-nav a {
-	color: #07C;
+.header-nav a{
+	color: #fff;
 	font-size: 17px;
 	margin-top: 5px;
 	font-weight: normal;
 }
 
+.header-nav .current a,
 .header-nav a:hover {
-	color: #ffffff;
+	color: #07c;
 	text-decoration: none;
 	font-weight: bold;
 }

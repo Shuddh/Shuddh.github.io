@@ -73,11 +73,6 @@ a:link {
 
 <nav class="navbar navbar-inverse">
     <div class="container-fluid header-nav">
-      <!-- <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button> -->
       <div class="row">
         <div class="col-md-2">
           <img src="img/home-logo.png" class="img-circle" alt="Logo" width="37px" height="37px"> 
@@ -91,7 +86,7 @@ a:link {
           <img src="img/net-logo.png" class="img-circle" alt="Logo" width="37px" height="37px"> 
           <a href="network.html">Techology Network</a>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-2 current">
           <img src="img/wc-logo.png" class="img-circle" alt="Logo" width="37px" height="37px">
             <a href="topicModel.html">Topic Modelling</a>
         </div>
@@ -117,15 +112,18 @@ a:link {
     <a href="#" onclick="updateData('data/keras.csv');" style = "color: #a26d41">keras</a>&nbsp&nbsp
   </div>
   
-  <div class="row" style="margin-top: 25px">
-    <div class="col-md-4" id= "area1" style="text-align: center;">
-      <p style="color:#041256">Clusters</p>
+  <div class="row" style="text-align: center">
+    <div class="col-md-4" style="text-align: center; margin-top: 30px">
+      <p style="color:#041256"><h4><u>Clusters</u></h4></p>
+      <div id= "area1"></div>
     </div>
-    <div class="col-md-4" id ="area2" style="text-align: center;">
-      <p style="color:#041256">Word Count and importance of Topic Keyword</p>
+    <div class="col-md-4" style="text-align: center; margin-top: 30px">
+      <p style="color:#041256"><h4><u>Word Count and importance of Topic Keyword</u></h4></p>
+      <div id ="area2"></div>
     </div>
-    <div class="col-md-4" id ="area3" style="text-align: center;">
-      <p style="color:#041256">Word Cloud - Top Keywords</p>
+    <div class="col-md-4" style="text-align: center; margin-top: 30px">
+      <p style="color:#041256"><h4><u>Word Cloud - Top Keywords</u></h4></p>
+      <div id ="area3"></div>
     </div>
 </div>
 
