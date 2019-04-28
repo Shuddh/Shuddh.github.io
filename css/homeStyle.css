@@ -30,18 +30,26 @@ body {
 .header-nav {
 	background: #222222;
 	color: #080808;
-	padding: 10px;
 	font-weight: normal;
 }
 
-.header-nav a{
+.header-nav a {
 	color: #fff;
 	font-size: 17px;
 	margin-top: 5px;
 	font-weight: normal;
 }
 
-.header-nav .current a,
+.header-nav .col-md-2,
+.header-nav .col-md-3 {
+  min-height: 50px;
+}
+
+.header-nav .current{
+  background-color: #918b8b;
+  font-weight:bolder;
+}
+
 .header-nav a:hover {
 	color: #07c;
 	text-decoration: none;
